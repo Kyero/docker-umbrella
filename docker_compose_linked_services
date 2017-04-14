@@ -1,0 +1,10 @@
+#!/bin/sh
+
+export docker_services=$(docker-compose config --services)
+export docker_links=$(docker inspect --format '{{range $.NetworkSettings.Networks}} {{range .Links}} {{.}} {{end}} {{end}}' $HOSTNAME | sed 's/[ :]\+/\n/g' | grep -v '^$' | sort | uniq)
+
+for link in ${docker_links}; do
+  for service in ${docker_services}; do
+      [ "${link}" = "${service}" ] && echo "${link}"
+  done
+done
